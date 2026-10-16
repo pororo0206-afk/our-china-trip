@@ -1,6 +1,4 @@
-// Public Supabase browser configuration for shared trip notes and cover photos.
-// Never put service_role or secret keys in this public file.
-window.TRIP_CONFIG = {
-  supabaseUrl: 'https://qxyhprzvkrchhexlcupx.supabase.co',
-  supabaseAnonKey: 'sb_publishable_sjUXRrZKtsgnUheofa0OGQ_QjAog1fl'
-};
+// Optional shared notes. Leave blank for local-only notes.
+// Supabase publishable/anon key is designed for frontend use.
+// NEVER put a service_role or secret key here.
+window.TRIP_CONFIG = { supabaseUrl: '', supabaseAnonKey: '' };
