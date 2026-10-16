@@ -1,4 +1,4 @@
-const CACHE = 'cornies-getaway-static-v9';
+const CACHE = 'cornies-getaway-static-v10';
 const CORE = [
   './','./index.html','./styles.css','./app.js','./data.js','./config.js',
   './manifest.webmanifest','./assets/favicon.svg','./assets/canton-illustration.svg',
