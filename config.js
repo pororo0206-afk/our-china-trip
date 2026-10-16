@@ -1,4 +1,5 @@
-// Optional shared notes. Leave blank for local-only notes.
-// Supabase publishable/anon key is designed for frontend use.
-// NEVER put a service_role or secret key here.
-window.TRIP_CONFIG = { supabaseUrl: '', supabaseAnonKey: '' };
+// Public browser-only Supabase settings. Never add a secret/service_role key.
+window.TRIP_CONFIG = {
+  supabaseUrl: 'https://qxyhprzvkrchhexlcupx.supabase.co',
+  supabaseAnonKey: 'sb_publishable_sjUXRrZKtsgnUheofa0OGQ_QjAog1fl'
+};
