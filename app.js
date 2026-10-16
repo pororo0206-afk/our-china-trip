@@ -33,9 +33,9 @@
   function toast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('visible');clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>el.classList.remove('visible'),3200);}
   function parseDay(){let m=location.hash.match(/day-([1-4])/);return m?Number(m[1]):1;}
   function imgSrc(p){return p?.image||'';}
-  function iconFor(cat){ const s=cat||''; if(/사진|포토|골목|건축/.test(s))return '✦'; if(/교통|항공/.test(s))return '↗'; if(/식사|점심|저녁|식당/.test(s))return '◒'; if(/카페|디저트/.test(s))return '☼'; if(/숙소/.test(s))return '⌂'; if(/마트|쇼핑/.test(s))return '◈'; return '✳'; }
+  function iconFor(cat){ const s=cat||''; if(/사진|포토|골목|건축/.test(s))return '✦'; if(/교통|항공/.test(s))return '↗'; if(/식사|점심|저녁|식당/.test(s))return '◒'; if(/카페|디저트/.test(s))return '☼'; if(/숙소/.test(s))return '⌂'; if(/마트|쇼핑/.test(s))return '◈'; return '✦'; }
   function generateHead(day){ const heroUrl=/^assets\/[a-zA-Z0-9_.-]+$/.test(day.photo) ? day.photo : safeURL(day.photo); return `<section class="hero theme-${day.theme}">
-    <div class="hero-copy"><div class="hero-day">THE CORNIES’ GETAWAY &nbsp;✳&nbsp; DAY 0${day.number} &nbsp;·&nbsp; ${escapeHTML(day.date)} &nbsp;·&nbsp; ${escapeHTML(day.city)}</div>
+    <div class="hero-copy"><div class="hero-day">THE CORNIES’ GETAWAY &nbsp;✦&nbsp; DAY 0${day.number} &nbsp;·&nbsp; ${escapeHTML(day.date)} &nbsp;·&nbsp; ${escapeHTML(day.city)}</div>
       <h1>${day.number===1?'Guangzhou':day.number===2?'Shenzhen':day.number===3?'Old town':'Homebound'} <em>diary.</em></h1>
       <div class="hero-kor">${escapeHTML(day.title)}</div><p class="hero-desc">${escapeHTML(day.intro)}</p>
       <div class="hero-chips"><span class="hero-chip">${escapeHTML(day.dateFull)}</span><span class="hero-chip">${escapeHTML(day.label)}</span></div>
@@ -93,17 +93,17 @@
       <div class="journey-marker"><span>${String(index+1).padStart(2,'0')}</span></div>
       <div class="spot-card-main">${imagesMarkup(spot)}<div class="spot-body"><div class="spot-upper"><span class="category">${escapeHTML(spot.category).toUpperCase()}</span>${time?`<span class="stop-time">${escapeHTML(time)}</span>`:''}</div>
       <h3>${escapeHTML(spot.title)}</h3><div class="spot-cn">${escapeHTML(spot.cn)}</div><p class="spot-desc">${escapeHTML(spot.desc)}</p>
-      <div class="spot-meta">${undecided?`<span class="tag pending">✳ 친구들과 결정하기</span>`:''}${spot.price?`<span class="tag">${escapeHTML(spot.price)}</span>`:''}${spot.duration?`<span class="tag">◷ ${escapeHTML(spot.duration)}</span>`:''}${spot.badge&&!undecided?`<span class="tag warn">! ${escapeHTML(spot.badge)}</span>`:''}</div>
+      <div class="spot-meta">${undecided?`<span class="tag pending">✦ 친구들과 결정하기</span>`:''}${spot.price?`<span class="tag">${escapeHTML(spot.price)}</span>`:''}${spot.duration?`<span class="tag">◷ ${escapeHTML(spot.duration)}</span>`:''}${spot.badge&&!undecided?`<span class="tag warn">! ${escapeHTML(spot.badge)}</span>`:''}</div>
       ${spot.address?`<div class="notice-inline"><b>주소</b> ${escapeHTML(spot.address)}${spot.id==='hotel'?`<div style="margin-top:5px;font-size:11px">☎ ${escapeHTML(TRIP.hotel.phone)} · ${escapeHTML(TRIP.hotel.note)}</div>`:''}</div>`:''}
       ${tips?`<div class="spot-info"><div class="info-title">BEFORE YOU GO · 참고사항</div><ul class="tips-list">${tips}</ul></div>`:''}
       ${photo?`<div class="photo-tips"><div class="info-title">✦ PHOTO SPOTS · 사진 구도</div><ul class="tips-list">${photo}</ul></div>`:''}
-      <div class="spot-linkrow"><a class="link-btn primary" href="${attr(amapLink(spot))}" target="_blank" rel="noopener noreferrer">⌖ 고덕지도</a>${undecided?'':`<a class="link-btn" href="${attr(socialLink(spot.cn+' 拍照 打卡'))}" target="_blank" rel="noopener noreferrer">✳ 샤오홍슈 사진</a>`}${spot.id==='hotel'?`<button type="button" class="link-btn" data-action="copy-address">주소 복사</button>`:''}</div>
+      <div class="spot-linkrow"><a class="link-btn primary" href="${attr(amapLink(spot))}" target="_blank" rel="noopener noreferrer">⌖ 고덕지도</a>${undecided?'':`<a class="link-btn" href="${attr(socialLink(spot.cn+' 拍照 打卡'))}" target="_blank" rel="noopener noreferrer">✦ 샤오홍슈 사진</a>`}${spot.id==='hotel'?`<button type="button" class="link-btn" data-action="copy-address">주소 복사</button>`:''}</div>
       ${links.length?`<div class="reference-links">${links.map(l=>`<a href="${attr(l.url)}" target="_blank" rel="noopener noreferrer">${escapeHTML(l.label)} ↗</a>`).join('')}</div>`:''}
       </div></div>${renderNotes(spot)}</article>`;
   }
   function getGroups(spot){ const cat=spot.category;if(/식사|식당|점심|저녁|카페|디저트/.test(cat))return 'food';if(/교통|항공|숙소/.test(cat))return 'transport';if(/사진|포토|골목|건축|야경/.test(cat))return 'photo';if(/쇼핑|마트|전자|팝업/.test(cat))return 'shopping';return 'other'; }
   function renderChoiceCards(slot){
-    if(slot==='night'){return `<div class="inline-choice"><div class="choice-heading"><span>CHOOSE YOUR NIGHT</span><strong>광저우 야경은 둘 중 하나 ✳</strong></div><div class="choice-panel">
+    if(slot==='night'){return `<div class="inline-choice"><div class="choice-heading"><span>CHOOSE YOUR NIGHT</span><strong>광저우 야경은 둘 중 하나 ✦</strong></div><div class="choice-panel">
       <button class="choice-card ${STATE.choice.night==='tower'?'selected':''}" data-action="choose-night" data-value="tower"><img src="assets/spot-tower.svg" alt="광저우타워 버블트램 일러스트"/><strong>① 버블트램</strong><small>460m 전망 체험 · 약 ¥315~323</small><span class="choice-ribbon">${STATE.choice.night==='tower'?'✓ 선택 중':'선택하기'}</span></button>
       <button class="choice-card ${STATE.choice.night==='cruise'?'selected':''}" data-action="choose-night" data-value="cruise"><img src="assets/spot-cruise.svg" alt="주강 유람선 일러스트"/><strong>② 주강 유람선</strong><small>22시 출항 후보 · 약 ¥98~188</small><span class="choice-ribbon">${STATE.choice.night==='cruise'?'✓ 선택 중':'선택하기'}</span></button>
     </div><p class="choice-status">선택하면 위 일정표와 이 아래 상세 카드가 함께 바뀝니다. 티켓 예약은 별도입니다.</p></div>`;}
@@ -126,9 +126,9 @@
     }).join('')}</div></div>`;
   }
   function renderSite(){const day=TRIP.days[STATE.day-1];document.title=`DAY ${STATE.day} · ${day.title} | The Cornies’ Getaway`;
-    APP.innerHTML=`<div class="layout"><aside class="rail"><div><div class="rail-logo">the cornies’<br>getaway <span style="font-size:19px">✳</span></div><div class="rail-label">Guangzhou · Shenzhen</div></div>
+    APP.innerHTML=`<div class="layout"><aside class="rail"><div><div class="rail-logo">the cornies’<br>getaway <span style="font-size:19px">✦</span></div><div class="rail-label">Guangzhou · Shenzhen</div></div>
       <nav class="rail-menu" aria-label="날짜별 일정"><div class="rail-title">THE ITINERARY</div>${TRIP.days.map(d=>`<button class="nav-day ${d.number===STATE.day?'active':''}" data-action="day" data-value="${d.number}"><span class="nav-number">0${d.number}</span><span><small>${escapeHTML(d.date)}</small><strong>${escapeHTML(d.number===1?'도착 & 야경':d.number===2?'선전 당일치기':d.number===3?'구시가지 산책':'귀국')}</strong></span></button>`).join('')}</nav>
-      <div class="rail-bottom"><div class="rail-stamp">the cornies’ getaway ♡</div><div class="rail-status"><strong>✳ ABOUT THIS GUIDE</strong>일정·요금·교통은 여행 전 계획안입니다. 예약 정보와 현지 영업 여부는 고덕지도에서 마지막으로 확인해주세요.</div><div class="rail-small">2026 · OCTOBER EDITION</div></div></aside>
+      <div class="rail-bottom"><div class="rail-stamp">the cornies’ getaway ♡</div><div class="rail-status"><strong>✦ ABOUT THIS GUIDE</strong>일정·요금·교통은 여행 전 계획안입니다. 예약 정보와 현지 영업 여부는 고덕지도에서 마지막으로 확인해주세요.</div><div class="rail-small">2026 · OCTOBER EDITION</div></div></aside>
       <main class="main"><header class="topbar"><div class="topbar-left"><span class="topbar-dot"></span><span class="topbar-meta">THE CORNIES’ GETAWAY &nbsp;/&nbsp; 2026 OCT</span></div><div class="top-actions"><span class="status-pill">${cloudEnabled?(STATE.user?'공동 메모 연결':'공동 메모 로그인 필요'):'기기별 메모 저장'}</span><button class="mini-btn keep" data-action="share">↗ 공유</button><div class="top-tools"><button type="button" class="mini-btn tools-trigger" data-action="toggle-tools" aria-expanded="${STATE.showTools}" aria-label="추가 기능 열기">···</button><div class="tools-popover" ${STATE.showTools?'':'hidden'}>${canEditCovers()?`<button data-action="toggle-cover-edit">✎ 대표 사진 편집</button>`:''}<button data-action="export">⇩ 메모 백업</button><button data-action="print">⎙ 인쇄</button></div></div>${STATE.editingCovers&&canEditCovers()?`<button class="mini-btn cover-mode-toggle active" data-action="toggle-cover-edit">✓ 편집 완료</button>`:''}${cloudEnabled?`<button class="mini-btn dark" data-action="auth">${STATE.user?'계정':'로그인'}</button>`:''}</div></header>
         <div class="content">${generateHead(day)}<div class="info-strip"><b>PLEASE NOTE ↗</b><span>${escapeHTML(day.notice)}</span></div>
         <div class="section-minihead"><h2>Today's itinerary</h2><span>첫 화면 · 일정표 + 위치 지도</span></div><div class="overview-grid">${renderSchedule(day)}${renderMapPanel()}</div>${renderRoutes(day)}<div class="section-minihead" style="margin-top:44px"><h2>Our little route, step by step</h2><span>방문 순서대로 · 이미지 · 팁 · SNS 메모</span></div>
@@ -214,7 +214,7 @@
     backdrop.innerHTML=`<div class="modal cover-modal" role="dialog" aria-modal="true" aria-labelledby="cover-dialog-title">
       <button class="modal-close" aria-label="닫기" data-action="close-modal">×</button>
       <div class="eyebrow">PHOTO EDITOR · THE CORNIES</div>
-      <h2 id="cover-dialog-title">cover story. ✳</h2>
+      <h2 id="cover-dialog-title">cover story. ✦</h2>
       <p class="cover-modal-help"><b>${escapeHTML(spot.title)}</b> · 대표 사진을 변경합니다. 노트의 SNS 링크는 그대로 남아요.</p>
       <div class="cover-modal-preview"><img id="cover-preview-img" src="${attr(preview)}" data-fallback="${attr(fallback)}" onerror="this.src=this.dataset.fallback" alt="대표 사진 미리보기" /></div>
       <div class="cover-mode-tabs" role="group" aria-label="사진 변경 방식">
