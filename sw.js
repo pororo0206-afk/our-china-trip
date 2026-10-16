@@ -1,4 +1,4 @@
-const CACHE = 'cornies-getaway-static-v7';
+const CACHE = 'cornies-getaway-static-v8';
 const CORE = [
   './','./index.html','./styles.css','./app.js','./data.js','./config.js',
   './manifest.webmanifest','./assets/favicon.svg','./assets/canton-illustration.svg',
@@ -71,11 +71,16 @@ self.addEventListener('fetch', event => {
   if(event.request.method!=='GET') return;
   const url=new URL(event.request.url);
   if(url.origin!==self.location.origin) return;
-  event.respondWith(caches.match(event.request).then(cached => {
-    const fresh=fetch(event.request).then(response => {
-      if(response.ok){const clone=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,clone));}
-      return response;
-    }).catch(()=>cached);
-    return cached||fresh;
-  }));
+  const mustRefresh = event.request.mode==='navigate' || /\\/(?:index\\.html|config\\.js|app\\.js)$/.test(url.pathname);
+  event.respondWith((async () => {
+    const cache=await caches.open(CACHE);
+    if(mustRefresh){
+      try { const response=await fetch(event.request,{cache:'no-store'}); if(response.ok)await cache.put(event.request,response.clone()); return response; }
+      catch { return (await caches.match(event.request)) || Response.error(); }
+    }
+    const cached=await caches.match(event.request);
+    if(cached)return cached;
+    try { const response=await fetch(event.request); if(response.ok)await cache.put(event.request,response.clone()); return response; }
+    catch { return Response.error(); }
+  })());
 });
