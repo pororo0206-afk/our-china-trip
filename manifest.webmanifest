@@ -1,0 +1,12 @@
+{
+  "name": "The Cornies’ Getaway · Guangzhou × Shenzhen",
+  "short_name": "Cornies Getaway",
+  "description": "친구들과 함께 보는 광저우 · 선전 여행 일정",
+  "start_url": "./index.html#day-1",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f7f2",
+  "theme_color": "#18372e",
+  "lang": "ko",
+  "icons": [{"src":"./assets/favicon.svg","type":"image/svg+xml","sizes":"any","purpose":"any"}]
+}
