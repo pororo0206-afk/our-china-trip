@@ -18,6 +18,7 @@
     user:null, loadingCloud:false, isAdmin:false, editingCovers:false, showTools:false,
     localCovers:readStorage(COVERS_STORE,{}), cloudCovers:{}, photoBlobs:{}, coverModalMode:'upload'
   };
+  let pastedCoverFile = null;
   let leafletMap = null;
   let toastTimeout;
 
@@ -205,7 +206,7 @@
   function exportNotes(){const out={version:2,trip:'guangzhou-shenzhen-2026',exported_at:new Date().toISOString(),notes:STATE.localNotes};const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'});const href=URL.createObjectURL(blob);const a=document.createElement('a');a.href=href;a.download='trip-notes-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(href),500);toast('로컬 메모 JSON을 저장했어요.');}
   function openCoverModal(spotId){
     if(!canEditCovers() || !SPOTS[spotId])return;
-    closeModal(); STATE.coverModalMode='upload'; const spot=SPOTS[spotId];
+    closeModal(); pastedCoverFile=null; STATE.coverModalMode='upload'; const spot=SPOTS[spotId];
     const current=coverFor(spot);
     const fallback='assets/spot-'+spot.id+'.svg';
     const preview=current.url||spot.image||fallback;
@@ -221,7 +222,7 @@
         <button type="button" class="cover-tab" data-action="cover-tab" data-value="url">이미지 주소 붙여넣기</button>
       </div>
       <form id="cover-form" data-action="save-cover" data-spot="${attr(spotId)}">
-        <div class="cover-upload-pane"><label class="cover-dropzone" for="cover-upload">＋ 사진 선택 <small>JPG · PNG · WebP / 10MB 이하 · 자동 크기 최적화</small></label><input id="cover-upload" type="file" name="photo" accept="image/jpeg,image/png,image/webp" class="cover-file-input" /><div id="cover-file-label" class="cover-file-label">선택된 사진이 없습니다</div></div>
+        <div class="cover-upload-pane"><label class="cover-dropzone" for="cover-upload">＋ 사진 선택 <small>또는 복사한 이미지를 ⌘V / Ctrl+V로 붙여넣기 · 10MB 이하</small></label><input id="cover-upload" type="file" name="photo" accept="image/jpeg,image/png,image/webp" class="cover-file-input" /><div id="cover-file-label" class="cover-file-label">선택된 사진이 없습니다</div></div>
         <div class="cover-url-pane" hidden><label for="cover-url" class="cover-url-label">이미지 직접 주소</label><input id="cover-url" type="url" name="url" placeholder="https://example.com/photo.jpg" /><small>인스타 게시물 주소가 아닌 JPG/PNG/WebP 등의 이미지 주소를 넣어주세요.</small></div>
         <div id="cover-editor-status" class="cover-editor-status" aria-live="polite"></div>
         <button type="submit" class="cover-save" id="cover-save-btn">대표 사진 저장 ↗</button>
@@ -289,7 +290,7 @@
   }
   async function saveCoverFromForm(form){
     const id=form.dataset.spot;if(!canEditCovers()||!SPOTS[id])return;
-    const file=form.querySelector('#cover-upload')?.files?.[0];
+    const file=pastedCoverFile || form.querySelector('#cover-upload')?.files?.[0];
     const rawUrl=(form.querySelector('#cover-url')?.value||'').trim();
     const mode=STATE.coverModalMode;
     const btn=form.querySelector('button[type=submit]');btn.disabled=true;btn.textContent='사진 저장 중…';
@@ -373,13 +374,35 @@
   });
   APP.addEventListener('change', e=>{
     if(e.target.id!=='cover-upload')return;
-    const file=e.target.files?.[0];
+    const file=e.target.files?.[0]; pastedCoverFile=null;
     const label=document.getElementById('cover-file-label');if(label)label.textContent=file?file.name:'선택된 사진이 없습니다';
     if(!file)return;
     if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>10*1024*1024){setCoverStatus('JPG, PNG, WebP 파일만 10MB까지 선택할 수 있어요.');return;}
     setCoverStatus('');const objectURL=URL.createObjectURL(file);
     const preview=document.getElementById('cover-preview-img');if(preview)preview.src=objectURL;
     setTimeout(()=>URL.revokeObjectURL(objectURL),15000);
+  });
+  document.addEventListener('paste', e=>{
+    const modal=document.querySelector('.cover-modal');
+    if(!modal || !canEditCovers())return;
+    const item=Array.from(e.clipboardData?.items||[]).find(x=>x.kind==='file' && x.type.startsWith('image/'));
+    if(!item)return;
+    e.preventDefault();
+    const raw=item.getAsFile();
+    if(!raw)return;
+    if(!['image/jpeg','image/png','image/webp'].includes(raw.type) || raw.size>10*1024*1024){
+      setCoverStatus('붙여넣은 사진은 JPG, PNG, WebP 형식, 10MB 이하만 가능합니다.');return;
+    }
+    pastedCoverFile=new File([raw], '붙여넣은-사진.'+(raw.type==='image/png'?'png':raw.type==='image/webp'?'webp':'jpg'),{type:raw.type});
+    STATE.coverModalMode='upload';
+    modal.querySelectorAll('.cover-tab').forEach(b=>b.classList.toggle('active',b.dataset.value==='upload'));
+    modal.querySelector('.cover-upload-pane').hidden=false;
+    modal.querySelector('.cover-url-pane').hidden=true;
+    const input=modal.querySelector('#cover-upload');if(input)input.value='';
+    const label=modal.querySelector('#cover-file-label');if(label)label.textContent='✓ 클립보드 사진이 준비되었습니다';
+    const preview=modal.querySelector('#cover-preview-img');
+    if(preview){const u=URL.createObjectURL(raw);preview.src=u;setTimeout(()=>URL.revokeObjectURL(u),15000);}
+    setCoverStatus('붙여넣기 완료 · 아래 대표 사진 저장 버튼을 눌러주세요.');
   });
   APP.addEventListener('input',e=>{if(e.target.id==='cover-url'){
     const url=safeURL(e.target.value.trim());const preview=document.getElementById('cover-preview-img');
